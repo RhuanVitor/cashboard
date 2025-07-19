@@ -5,7 +5,7 @@ export interface ITransaction extends Document {
   name: string
   value: number
   date: Date
-  category: string
+  categoryId: string
 }
 
 const transactionSchema = new Schema<ITransaction>({ 
@@ -25,7 +25,7 @@ const transactionSchema = new Schema<ITransaction>({
     type: Date,
     required: true
   },
-  category: {
+  categoryId: {
     type: String,
     required: true
   }
