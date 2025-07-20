@@ -1,9 +1,9 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface ICategory extends Document{
-    userId: String,
-    name: String,
-    color?: String 
+    userId: string,
+    name: string,
+    color?: string 
 }
 
 const categorySchema = new Schema<ICategory>({

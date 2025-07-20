@@ -4,8 +4,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "build": "tsc & node dist/index.js",
-    "dev": "npx tsx src/index.ts"
+    "build": "tsc & node dist/app.js",
+    "dev": "npx tsx src/app.ts"
   },
   "author": "",
   "license": "ISC",
@@ -16,5 +16,11 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.16.4"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^24.0.15"
   }
 }
