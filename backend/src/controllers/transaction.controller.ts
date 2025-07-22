@@ -29,16 +29,17 @@ export async function getTransactions(req: Request, res: Response){
         const next = new Date(target);
 
         next.setDate(target.getDate() + 1);
-        
+
         filter.date = { $gte: date, $lte: next};
 
     } else if(startDate && endDate){
-        if(startDate) filter.date.$gte = startDate;
-        if(endDate) filter.date.$lte = endDate;
+        filter.date = {};
+        if(startDate) filter.date.$gte = new Date(startDate as string);
+        if(endDate) filter.date.$lte = new Date(endDate as string);
     }
 
     try{
-        const transactions = Transaction.find(filter);
+        const transactions = await Transaction.find(filter);
 
         res.status(200).json({ transactions })
     }catch(error){

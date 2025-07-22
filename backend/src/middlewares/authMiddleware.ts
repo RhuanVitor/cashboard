@@ -5,7 +5,7 @@ import { configs } from '../configs';
 
 export function verifyToken(req: Request, res: Response, next: NextFunction){
     const authHeader = req.headers['authorization'];
-    const token = authHeader!.split(' ')[1];
+    const token = authHeader?.split(' ')[1];
 
     if(!token){
         return res.status(422).json({'msg': 'An authentication token is required to access this route!'});
@@ -14,7 +14,8 @@ export function verifyToken(req: Request, res: Response, next: NextFunction){
     try{
         const secret_key = configs.jwt_secret;
 
-        (req as any).userId = jwt.verify(token, secret_key!);
+        const decoded = jwt.verify(token, secret_key!) as { userId: string };
+        (req as any).userId = decoded.userId;
 
         next();
     }catch(error){
