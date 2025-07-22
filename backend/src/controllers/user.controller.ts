@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 
-import { User } from "../models/user";
+import { User } from "../models/user.model";
 import { configs } from "../configs";
 
 export async function register(req: Request, res: Response){

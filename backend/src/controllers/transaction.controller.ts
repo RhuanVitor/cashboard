@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { ITransaction, Transaction } from "../models/transaction";
+import { ITransaction, Transaction } from "../models/transaction.model";
 
 export async function getTransactions(req: Request, res: Response){
     
