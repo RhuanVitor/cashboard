@@ -1,9 +1,53 @@
 import { Request, Response } from "express";
 
-import { ITransaction, Transaction } from "../models/transaction.model";
+import { Transaction } from "../models/transaction.model";
 
 export async function getTransactions(req: Request, res: Response){
-    
+    const {categoryId, minValue, maxValue, date, startDate, endDate } = req.query;
+
+    const userId = (req as any).userId;
+
+    const filter: any = { userId };
+
+    if(categoryId){
+        filter.categoryId = categoryId;
+    }
+
+    if(minValue || maxValue){
+        filter.value = {};
+
+        if(minValue) filter.value.$gte = Number(minValue);
+        if(maxValue) filter.value.$lte = Number(maxValue);
+
+    }
+
+    if(date){
+        const target = new Date(date as string);
+
+        target.setHours(0, 0, 0, 0);
+
+        const next = new Date(target);
+
+        next.setDate(target.getDate() + 1);
+        
+        filter.date = { $gte: date, $lte: next};
+
+    } else if(startDate && endDate){
+        if(startDate) filter.date.$gte = startDate;
+        if(endDate) filter.date.$lte = endDate;
+    }
+
+    try{
+        const transactions = Transaction.find(filter);
+
+        res.status(200).json({ transactions })
+    }catch(error){
+        res.status(500).json({
+            'msg': 'A server error occurred, please try again later.'
+        })
+
+        console.log(`A server error occurred: ${error}`);
+    }
 }
 
 export async function createTransaction(req: Request, res: Response){
@@ -23,7 +67,7 @@ export async function createTransaction(req: Request, res: Response){
     }
 
     if(!date){
-        return res.status(422).json({'msg': 'Date is required!'})
+        return res.status(422).json({'msg': 'Date is required!'});
     }
 
     try{
