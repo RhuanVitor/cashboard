@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { createTransaction, deleteTransaction, updateTransaction, getTransactions } from "../controllers/transaction.controller";
-import { verifyToken } from "../middlewares/authMiddleware";
+import { createTransaction, deleteTransaction, updateTransaction, getTransactions } from "../controllers/transaction.controller.js";
+import { verifyToken } from "../middlewares/authMiddleware.js";
 
 const router = Router()
 

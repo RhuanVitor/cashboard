@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { Transaction } from "../models/transaction.model";
+import { Transaction } from "../models/transaction.model.js";
 
 export async function getTransactions(req: Request, res: Response){
     const {categoryId, minValue, maxValue, date, startDate, endDate } = req.query;

@@ -1,8 +1,8 @@
 import express from 'express';
 import mongoose from 'mongoose';
-import routes from './routes';
+import routes from './routes/index.js';
 
-import { configs } from './configs';
+import { configs } from './configs/index.js';
 
 const app = express();
 

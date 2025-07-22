@@ -2,8 +2,8 @@ import { Request, Response } from "express";
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 
-import { User } from "../models/user.model";
-import { configs } from "../configs";
+import { User } from "../models/user.model.js";
+import { configs } from "../configs/index.js";
 
 export async function register(req: Request, res: Response){
     const { name, email, password, confirm_password } = req.body;
