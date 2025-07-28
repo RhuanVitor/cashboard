@@ -96,5 +96,9 @@ export async function login(req: Request, res: Response){
 }
 
 function createToken(userId: {}){
-    return jwt.sign({ userId }, configs.jwt_secret!);
+    return jwt.sign(
+        { userId }, 
+        configs.jwt_secret!,
+        { expiresIn: '7d' },
+    );
 }
