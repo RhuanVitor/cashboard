@@ -3,8 +3,8 @@ import { Request, Response } from "express";
 import { Transaction } from "../models/transaction.model.js";
 
 export async function getTransactions(req: Request, res: Response){
-    
-    const MAX_LIMIT_PER_REQUEST = 100;
+
+    const MAX_LIMIT_PER_REQUEST = 3;
     let requestedLimit = parseInt(req.query.limit as string) || 20;
     const limit = Math.min(requestedLimit, MAX_LIMIT_PER_REQUEST);
 
@@ -95,9 +95,6 @@ export async function getTransactions(req: Request, res: Response){
             transactions,
             nextCursor
         });
-
-
-        res.status(200).json({ transactions })
         
     }catch(error){
         res.status(500).json({
