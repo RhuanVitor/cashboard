@@ -3,7 +3,28 @@ import { Request, Response } from "express";
 import { Transaction } from "../models/transaction.model.js";
 
 export async function getTransactions(req: Request, res: Response){
+    
+    const MAX_LIMIT_PER_REQUEST = 100;
+    let requestedLimit = parseInt(req.query.limit as string) || 20;
+    const limit = Math.min(requestedLimit, MAX_LIMIT_PER_REQUEST);
+
+
     const {categoryId, minValue, maxValue, date, startDate, endDate } = req.query;
+
+    const cursor = req.query.cursor as string | undefined;
+    const sortBy = (req.query.sorterBy as string) || 'date';
+    const orderBy = (req.query.orderBy as string) || 'desc';
+
+    const allowedSortBy = [ 'date', 'value' ];
+
+    const sortOptions: any = {};
+    const order = orderBy === 'asc' ? 1 : -1;
+    sortOptions[sortBy] = order;
+    sortOptions._id = -1;
+
+    if(!allowedSortBy.includes(sortBy)){
+        return res.status(422).json({'msg': 'Invalid sort value. Allowed values: date, value'})
+    }
 
     const userId = (req as any).userId;
 
@@ -38,10 +59,46 @@ export async function getTransactions(req: Request, res: Response){
         if(endDate) filter.date.$lte = new Date(endDate as string);
     }
 
+    const isDefaultSortForCursor = sortBy === 'date' && orderBy === 'desc';
+    if (cursor && isDefaultSortForCursor) {
+        try {
+            const [lastDateStr, lastId] = Buffer.from(cursor, 'base64').toString('ascii').split('_');
+            const lastDate = new Date(lastDateStr);
+
+            if (!lastDate || !lastId) {
+                return res.status(400).json({ msg: 'Formato do cursor inválido.' });
+            }
+            
+            filter.$or = [
+                { date: { $lt: lastDate } },
+                { date: lastDate, _id: { $lt: lastId } }
+            ];
+        } catch (error) {
+            return res.status(400).json({ msg: 'Erro ao processar o cursor.' });
+        }
+    }
+//
+
     try{
-        const transactions = await Transaction.find(filter);
+
+        const transactions = await Transaction.find(filter)
+            .sort(sortOptions)
+            .limit(limit);
+
+        let nextCursor: string | null = null;
+        if (transactions.length === limit && isDefaultSortForCursor) {
+            const lastTransaction = transactions[transactions.length - 1];
+            nextCursor = Buffer.from(`${lastTransaction.date.toISOString()}_${lastTransaction._id}`).toString('base64');
+        }
+
+        res.status(200).json({
+            transactions,
+            nextCursor
+        });
+
 
         res.status(200).json({ transactions })
+        
     }catch(error){
         res.status(500).json({
             'msg': 'A server error occurred, please try again later.'
